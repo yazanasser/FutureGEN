@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512.36">
+  <!-- Generator: Adobe Illustrator 30.1.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 136)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: #24cb71;
+      }
+
+      .st1 {
+        fill: #874fff;
+      }
+
+      .st2 {
+        fill: #00b6ff;
+      }
+
+      .st3 {
+        fill: #fff;
+      }
+
+      .st4 {
+        fill: #ff7237;
+      }
+
+      .st5 {
+        fill: #ff3737;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision">
+    <circle class="st3" cx="256" cy="256.18" r="256"/>
+    <g>
+      <path class="st2" d="M255.63,248.86c0-33.18,26.9-60.07,60.07-60.07h8.69c.24,0,.5,0,.74,0,37.22,0,67.4,30.19,67.4,67.4s-30.18,67.39-67.4,67.39c-.24,0-.51,0-.75,0h-8.68c-33.17,0-60.07-26.9-60.07-60.07v-14.64Z"/>
+      <path class="st0" d="M119.47,390.98c0-37.22,30.18-67.41,67.4-67.41h68.76v66.71c0,37.61-30.83,68.08-68.43,68.08s-67.73-30.17-67.73-67.38Z"/>
+      <path class="st4" d="M255.63,54.01v134.78h68.76c.24,0,.5,0,.74,0,37.22,0,67.4-30.19,67.4-67.4s-30.18-67.4-67.4-67.4c-.24,0-.51,0-.75,0h-68.76Z"/>
+      <path class="st5" d="M119.47,121.39c0,37.22,30.18,67.4,67.4,67.4h68.76V54.01h-68.77c-37.21,0-67.39,30.17-67.39,67.38Z"/>
+      <path class="st1" d="M119.47,256.18c0,37.22,30.18,67.4,67.4,67.4h68.76v-134.78h-68.77c-37.21,0-67.39,30.17-67.39,67.38Z"/>
+    </g>
+  </g>
+</svg>

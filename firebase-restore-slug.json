@@ -1,0 +1,300 @@
+{
+  "ratings": {
+    "email-template-builder": {
+      "total": 10,
+      "count": 3,
+      "average": 3.33
+    },
+    "youware": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "everdone": {
+      "total": 10,
+      "count": 2,
+      "average": 5
+    },
+    "cosupport-ai": {
+      "total": 23,
+      "count": 5,
+      "average": 4.6
+    },
+    "rewnue": {
+      "total": 7,
+      "count": 2,
+      "average": 3.5
+    },
+    "ordinal": {
+      "total": 2,
+      "count": 1,
+      "average": 2
+    },
+    "evechange": {
+      "total": 1,
+      "count": 1,
+      "average": 1
+    },
+    "ori": {
+      "total": 9,
+      "count": 2,
+      "average": 4.5
+    },
+    "plurality-network": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "astron-agent": {
+      "total": 6,
+      "count": 2,
+      "average": 3
+    },
+    "nodeland": {
+      "total": 10,
+      "count": 2,
+      "average": 5
+    },
+    "rootlenses": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "google-antigravity": {
+      "total": 10,
+      "count": 2,
+      "average": 5
+    },
+    "inboxparser": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "postsyncer": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "anyreach": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "pageon-ai": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "coldi": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "medo": {
+      "total": 8,
+      "count": 2,
+      "average": 4
+    },
+    "devlo": {
+      "total": 4,
+      "count": 1,
+      "average": 4
+    },
+    "docket": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "alemia-ai": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "daisy-so": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "memmachine": {
+      "total": 11,
+      "count": 3,
+      "average": 3.67
+    },
+    "gptbots-ai": {
+      "total": 3,
+      "count": 1,
+      "average": 3
+    },
+    "shortmotion": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "floot": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "translatevideos-io": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "omind": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "magic": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "openart": {
+      "total": 5,
+      "count": 1,
+      "average": 5
+    },
+    "dolby-on": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    },
+    "imageai-photoshop-with-text-data": {
+      "total": 15,
+      "count": 3,
+      "average": 5
+    }
+  },
+  "users": {
+    "guest": {
+      "data": {
+        "ratings": {
+          "email-template-builder": 4,
+          "everdone": 3,
+          "devlo": 4
+        }
+      }
+    },
+    "nalogaili@gmail_com": {
+      "createdAt": "2026-04-09T20:41:43.649Z",
+      "data": {
+        "favorites": {
+          "list": [
+            "youware"
+          ]
+        },
+        "ratings": {
+          "rewnue": 3,
+          "gptbots-ai": 3
+        }
+      },
+      "email": "nalogaili@gmail.com",
+      "name": "nalogaili"
+    },
+    "nasserogaili@gmail,com": {
+      "profile": {
+        "createdAt": "2026-04-09T17:00:24.026Z",
+        "email": "nasserogaili@gmail.com",
+        "name": "nasserogaili"
+      },
+      "ratings": {
+        "daisy-so": 5,
+        "floot": 5,
+        "translatevideos-io": 5,
+        "omind": 5,
+        "magic": 5,
+        "dolby-on": 5,
+        "imageai-photoshop-with-text-data": 5
+      }
+    },
+    "rawanasser07@gmail_com": {
+      "createdAt": "2026-04-09T20:29:05.772Z",
+      "email": "rawanasser07@gmail.com",
+      "name": "rawanasser07"
+    },
+    "test@example_com": {
+      "data": {
+        "favorites": {
+          "list": [
+            "chopdi-ai",
+            "email-template-builder"
+          ]
+        }
+      }
+    },
+    "yazanasser2013@gmail,com": {
+      "favorites": [
+        "youware",
+        "cosupport-ai",
+        "google-antigravity",
+        "memmachine"
+      ],
+      "ratings": {
+        "email-template-builder": 5,
+        "youware": 5,
+        "everdone": 5,
+        "google-antigravity": 5,
+        "daisy-so": 5,
+        "floot": 5,
+        "translatevideos-io": 5,
+        "omind": 5,
+        "magic": 5,
+        "dolby-on": 5,
+        "imageai-photoshop-with-text-data": 5
+      }
+    },
+    "yazanasser2013@gmail_com": {
+      "createdAt": "2026-04-09T20:35:43.040Z",
+      "data": {
+        "favorites": {
+          "list": [
+            "google-antigravity",
+            "memmachine",
+            "cosupport-ai",
+            "everdone",
+            "atono",
+            "cospace",
+            "email-template-builder",
+            "thematic",
+            "youware",
+            "emdash",
+            "nodeland",
+            "astron-agent"
+          ]
+        },
+        "ratings": {
+          "email-template-builder": 1,
+          "youware": 5,
+          "everdone": 5,
+          "cosupport-ai": 5,
+          "ori": 5,
+          "astron-agent": 5,
+          "nodeland": 5,
+          "google-antigravity": 5
+        }
+      },
+      "email": "yazanasser2013@gmail.com",
+      "name": "yazanasser2013"
+    },
+    "yazangithub2030@gmail,com": {
+      "profile": {
+        "createdAt": "2026-04-09T16:26:34.354Z",
+        "email": "yazangithub2030@gmail.com",
+        "name": "yazangithub2030"
+      },
+      "ratings": {
+        "email-template-builder": 5,
+        "youware": 5,
+        "everdone": 5,
+        "daisy-so": 5,
+        "floot": 5,
+        "translatevideos-io": 5,
+        "omind": 5,
+        "magic": 5,
+        "dolby-on": 5,
+        "imageai-photoshop-with-text-data": 5
+      }
+    }
+  }
+}

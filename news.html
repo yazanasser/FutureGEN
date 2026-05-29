@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html data-theme="light" lang="en" dir="ltr">
+
+<head>
+  <meta name="template" content="news">
+  <script>
+    (function () {
+      if (window.location.protocol === 'file:') {
+        document.addEventListener('DOMContentLoaded', function () {
+          var bar = document.createElement('div');
+          bar.id = 'file-protocol-warning';
+          bar.style.cssText = [
+            'position:fixed', 'top:0', 'left:0', 'right:0', 'z-index:2147483647',
+            'background:#c0392b', 'color:#fff', 'padding:14px 20px',
+            'font:bold 14px/1.5 sans-serif', 'text-align:center',
+            'box-shadow:0 2px 8px rgba(0,0,0,.4)'
+          ].join(';');
+          bar.innerHTML = [
+            '⚠️ You are opening this file directly — links and navigation will not work.',
+            ' To use FutureGen properly:<br>',
+            '1. Double-click <strong>start.bat</strong> in the project folder &nbsp;|&nbsp;',
+            '2. Then open <a href="http://localhost:3000" style="color:#ffe082;font-weight:bold;">',
+            'http://localhost:3000</a> in your browser.'
+          ].join('');
+          var close = document.createElement('span');
+          close.textContent = ' ×';
+          close.style.cssText = 'cursor:pointer;margin-left:16px;font-size:18px;vertical-align:middle;';
+          close.onclick = function () { bar.remove(); };
+          bar.appendChild(close);
+          document.body.insertBefore(bar, document.body.firstChild);
+        });
+        return;
+      }
+
+      var h = window.location.hostname;
+      if (h === 'localhost' || h === '127.0.0.1' || h === '0.0.0.0') return;
+
+      if (window.location.search.indexOf('u=') !== -1) {
+        try {
+          var cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete('u');
+          window.history.replaceState(null, '', cleanUrl.pathname + cleanUrl.search + cleanUrl.hash);
+        } catch (e) {}
+      }
+
+      var _checking = false;
+      var THROTTLE_MS = 15000;
+      var POLL_MS = 60000;
+
+      function fetchVersionByXHR(cb) {
+        var buster = Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+        var url = '/version.json?_=' + buster;
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', url, true);
+          xhr.setRequestHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+          xhr.setRequestHeader('Pragma', 'no-cache');
+          xhr.setRequestHeader('Expires', '0');
+          xhr.timeout = 8000;
+          xhr.onload = function () {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              cb(null, xhr.responseText.trim());
+            } else {
+              cb(new Error('HTTP ' + xhr.status));
+            }
+          };
+          xhr.onerror = xhr.ontimeout = function () { cb(new Error('network')); };
+          xhr.send();
+        } catch (e) {
+          fetch(url, { method: 'GET', cache: 'no-store' })
+            .then(function (r) { return r.ok ? r.text() : Promise.reject(r.status); })
+            .then(function (t) { cb(null, t.trim()); })
+            .catch(function (err) { cb(err); });
+        }
+      }
+
+      function checkForUpdates(force) {
+        if (_checking) return;
+        var now = Date.now();
+        if (!force) {
+          var last = parseInt(sessionStorage.getItem('fg_lc') || '0', 10);
+          if (now - last < THROTTLE_MS) return;
+        }
+        sessionStorage.setItem('fg_lc', now.toString());
+        _checking = true;
+
+        fetchVersionByXHR(function (err, fingerprint) {
+          _checking = false;
+          if (err || !fingerprint) return;
+
+          var stored = localStorage.getItem('fg_sv');
+          if (stored && stored !== fingerprint) {
+            console.log('[FG-Updater] New version detected. Reloading…');
+            localStorage.setItem('fg_sv', fingerprint);
+
+            try {
+              if ('caches' in window) {
+                caches.keys().then(function (k) { k.forEach(function (n) { caches.delete(n); }); });
+              }
+            } catch (e) {}
+
+            try {
+              if (navigator.serviceWorker) {
+                navigator.serviceWorker.getRegistrations().then(function (r) {
+                  r.forEach(function (reg) { reg.unregister(); });
+                });
+              }
+            } catch (e) {}
+
+            setTimeout(function () {
+              var reloadUrl = new URL(window.location.href);
+              reloadUrl.searchParams.set('u', now.toString());
+              window.location.replace(reloadUrl.toString());
+            }, 150);
+          } else {
+            localStorage.setItem('fg_sv', fingerprint);
+          }
+        });
+      }
+
+      if (document.readyState === 'complete') {
+        checkForUpdates(false);
+      } else {
+        window.addEventListener('load', function () { checkForUpdates(false); });
+      }
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') checkForUpdates(false);
+      });
+
+      window.addEventListener('pageshow', function (e) {
+        if (e.persisted) checkForUpdates(true);
+      });
+
+      window.addEventListener('focus', function () { checkForUpdates(false); });
+
+      setInterval(function () { checkForUpdates(false); }, POLL_MS);
+
+    }());
+  </script>
+  <script src="/js/router.js?v=20260523101102"></script>
+  <script src="/js/route-utils.js?v=20260523101102"></script>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+  <!-- PRIMARY SEO META -->
+  <title>AI News - FutureGen</title>
+  <meta name="description"
+    content="Stay up-to-date with the latest AI news, trends, and breakthroughs from FutureGen." />
+
+  <!-- PERMISSIONS POLICY -->
+  <meta http-equiv="Permissions-Policy"
+    content="interest-cohort=(), shared-storage=(), browsing-topics=(), run-ad-auction=(), join-ad-interest-group=()">
+
+  <!-- AUTHOR & ROBOTS -->
+  <meta name="author" content="FutureGen Team" />
+  <meta name="robots" content="index, follow" />
+
+  <!-- CANONICAL -->
+  <link rel="canonical" href="https://futuregen.space/news" />
+
+  <!-- OG -->
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="AI News - FutureGen" />
+  <meta property="og:description" content="Stay up-to-date with the latest AI news, trends, and breakthroughs." />
+  <meta property="og:image" content="https://futuregen.space/Images/Logo.png" />
+  <meta property="og:url" content="https://futuregen.space/news" />
+  <meta property="og:site_name" content="FutureGen AI Tools" />
+
+  <!-- TWITTER CARD -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI News - FutureGen" />
+  <meta name="twitter:description" content="Stay up-to-date with the latest AI news, trends, and breakthroughs." />
+  <meta name="twitter:image" content="https://futuregen.space/Images/Logo.png" />
+  <meta name="twitter:site" content="@FutureGEN2025" />
+
+  <!-- ADDITIONAL META -->
+  <meta name="theme-color" content="#401F71" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/x-icon" href="./Images/favicon.ico">
+
+  <!-- PRECONNECT -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <!-- FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap"
+    rel="stylesheet" />
+
+  <!-- CSS LIBRARIES -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    /* ========== THEME TOKENS ========== */
+    :root {
+      --primary-color: #401F71;
+      --secondary-color: #be7b72;
+      --accent-color: #fdaf7b;
+      --bg-page: #f8fafc;
+      --bg-white: #ffffff;
+      --text-dark: #101010;
+      --text-muted: #6b7280;
+      --border: #e5e7eb;
+      --radius-xs: 8px;
+      --radius-sm: 25px;
+      --radius-md: 16px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+      --shadow-md: 0 8px 20px -6px rgb(0 0 0 / 0.15);
+      --shadow-lg: 0 20px 40px -12px rgb(0 0 0 / 0.25);
+      --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+      --header-h: 68px;
+      --footer-bg-light: linear-gradient(135deg, #be7b72 0%, #633d5c 100%);
+      --footer-bg-dark: linear-gradient(135deg, #2a1a4a 0%, #8a5a52 100%);
+      --footer-text-light: #ffffff;
+      --footer-text-dark: #e5e7eb;
+      --footer-link-light: rgba(255, 255, 255, 0.85);
+      --footer-link-dark: rgba(229, 231, 235, 0.85);
+      --footer-border-light: rgba(255, 255, 255, 0.25);
+      --footer-border-dark: rgba(229, 231, 235, 0.25);
+    }
+
+    html[data-theme="dark"] {
+      --bg-page: #0b0f1a;
+      --bg-white: #1a2238;
+      --text-dark: #e5e7eb;
+      --text-muted: #9ca3af;
+      --border: #455683;
+      --shadow-sm: 0 1px 2px 0 rgb(255 255 255 / 0.04);
+      --shadow-md: 0 8px 20px -6px rgb(0 0 0 / 0.4);
+      --shadow-lg: 0 20px 40px -12px rgb(0 0 0 / 0.6);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg-page);
+      color: var(--text-dark);
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ========== NAVBAR ========== */
+    header.sticky-top {
+      z-index: 1030;
+    }
+
+    nav {
+      position: relative;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 48px;
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 40px;
+      width: 1450px;
+      max-width: calc(100% - 32px);
+      z-index: 99999999;
+    }
+
+    html[data-theme="dark"] nav {
+      background: rgba(26, 34, 56, 0.6) !important;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+      transform: scale(1.1);
+    }
+
+    .navbar-brand img {
+      height: 36px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+
+    html[data-theme="dark"] .navbar-brand img {
+      content: url('/Images/logo-dark-futuregen.png');
+      height: 50px;
+      width: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link {
+      font-family: "Tajawal", "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      font-weight: 700;
+      color: var(--text-dark) !important;
+      opacity: 0.8;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1rem !important;
+      border-radius: var(--radius-xs);
+    }
+
+    html[data-theme="dark"] .nav-link {
+      color: #e5e7eb !important;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      opacity: 1;
+      background: transparent;
+      color: var(--primary-color) !important;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .nav-search {
+      position: relative;
+      width: 340px;
+      transition: width 0.3s ease;
+    }
+
+    .nav-search:focus-within {
+      width: 380px;
+    }
+
+    .nav-search .input-group {
+      border-radius: 40px;
+      overflow: hidden;
+    }
+
+    .nav-search .form-control {
+      border-radius: 40px 0 0 40px;
+      border: 1px solid var(--border);
+      border-right: none;
+      padding: 0.5rem 1rem;
+      background: var(--bg-white);
+      color: var(--text-dark);
+      font-size: 0.9rem;
+    }
+
+    .nav-search .btn {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0 40px 40px 0;
+    }
+
+    .navbar-toggler {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xs);
+      color: var(--text-dark);
+      padding: 0.5rem 0.75rem;
+    }
+
+    .navbar-toggler i {
+      font-size: 1.25rem;
+    }
+
+    .btn-outline-primary {
+      border-color: var(--primary-color);
+      color: var(--primary-color);
+    }
+
+    .btn-outline-primary:hover {
+      background: var(--primary-color);
+      color: #fff;
+    }
+
+    html[data-theme="dark"] .btn-outline-primary {
+      color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    html[data-theme="dark"] .btn-outline-primary:hover {
+      background: var(--accent-color);
+      color: var(--text-dark);
+    }
+
+    /* .skeleton {
+      background: #e0e0e0;
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes skeleton-loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    html[data-theme="dark"] .skeleton {
+      background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+      background-size: 200% 100%;
+    }
+
+    .skeleton-cover { width: 100%; height: 350px; border-radius: var(--radius-md); }
+    .skeleton-text { height: 20px; margin-bottom: 12px; width: 100%; }
+    .skeleton-title { height: 44px; margin-bottom: 20px; width: 65%; }
+    .skeleton-meta { height: 16px; width: 40%; margin-bottom: 24px; }
+
+    .article-wrapper {
+      flex: 1;
+      padding: 2rem 0 4rem;
+    }
+
+    .article-header {
+      margin-bottom: 2rem;
+    }
+
+    .article-category {
+      display: inline-block;
+      background: var(--gradient);
+      color: #fff;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .article-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 1rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .article-meta i {
+      margin-right: 0.4rem;
+    }
+
+    .article-cover {
+      width: 100%;
+      max-height: 450px;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      margin-bottom: 2.5rem;
+      box-shadow: var(--shadow-lg);
+      display: none;
+    }
+
+    .article-cover.loading {
+      filter: blur(4px);
+    }
+
+    .article-body {
+      font-size: 1.1rem;
+      line-height: 1.9;
+      color: var(--text-dark);
+      word-break: break-word;
+      overflow-wrap: break-word;
+      overflow-x: hidden;
+    }
+
+    .article-body h2 {
+      font-weight: 700;
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    .article-body h3 {
+      font-weight: 600;
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .article-body p {
+      margin-bottom: 1.25rem;
+    }
+
+    .article-body a {
+      color: var(--primary-color);
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .article-body a:hover {
+      color: var(--secondary-color);
+    }
+
+    .article-body ul, .article-body ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .article-body li {
+      margin-bottom: 0.5rem;
+    }
+
+    .article-body blockquote {
+      border-left: 4px solid var(--primary-color);
+      padding: 1rem 1.5rem;
+      margin: 1.5rem 0;
+      background: rgba(64, 31, 113, 0.04);
+      border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+      font-style: italic;
+    }
+
+    .article-body img {
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      margin: 1rem 0;
+    }
+
+    .article-body code {
+      background: rgba(64, 31, 113, 0.08);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .article-body pre {
+      background: var(--bg-white);
+      padding: 1.25rem;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      border: 1px solid rgba(0,0,0,0.08);
+      margin: 1.5rem 0;
+    }
+
+    .article-body pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .error-state {
+      text-align: center;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .error-state i {
+      font-size: 4rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .error-state h1 {
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+
+    .error-state .btn {
+      margin-top: 1rem;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--primary-color);
+    }
+
+    .site-footer {
+      background: var(--primary-color);
+      color: #fff;
+      padding: 2.5rem 0 1.5rem;
+      margin-top: auto;
+    }
+
+    .site-footer a {
+      color: rgba(255,255,255,0.8);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .site-footer a:hover {
+      color: #fff;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.7;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      border: none;
+      font-weight: 600;
+      border-radius: var(--radius-xs);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.2s var(--easing), box-shadow 0.2s var(--easing);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      color: #fff;
+    }
+
+    @media (max-width: 768px) {
+      .article-title {
+        font-size: 1.75rem;
+      }
+
+      .skeleton-cover {
+        height: 200px;
+      }
+
+      .article-cover {
+        max-height: 250px;
+      }
+
+      .news-nav .nav-links {
+        gap: 0.75rem;
+      }
+    }
+
+    ::-webkit-scrollbar { width: 10px; height: 10px; }
+    ::-webkit-scrollbar-track { background: var(--bg-page); }
+    ::-webkit-scrollbar-thumb { background: var(--gradient); border-radius: 999px; }
+    html[data-theme="dark"] ::-webkit-scrollbar-track { background: #0b0f1a; } */
+
+
+    /* =========================
+   NEWS GRID (3 cards per row desktop)
+========================= */
+    #blog-posts-container {
+      display: grid !important;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      align-items: stretch;
+    }
+
+
+    @media (max-width: 992px) {
+      #blog-posts-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+
+    @media (max-width: 576px) {
+      #blog-posts-container {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+      }
+    }
+
+
+    #blog-posts-container .news-card-item {
+      width: 100%;
+    }
+
+
+    #blog-posts-container .card {
+      height: 100%;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+
+    #blog-posts-container .card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+
+
+    #blog-posts-container .card-body {
+      padding: 1.2rem 2.8rem !important;
+      /* Makes text less wide by padding horizontally */
+    }
+
+    html[data-theme="dark"] #blog-posts-container .card-title,
+    html[data-theme="dark"] #blog-posts-container .card-text {
+      color: #E5E7EB !important;
+    }
+
+    #blog-posts-container .card-title,
+    #blog-posts-container .card-text {
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      white-space: normal !important;
+      line-height: 2 !important;
+      /* increase distance between lines */
+    }
+
+    #blog-posts-container .card-text {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 4;
+      line-clamp: 4;
+      overflow: hidden;
+    }
+
+    #news-page,
+    #blog-posts-container {
+      overflow: visible !important;
+    }
+
+    #blog-posts-container {
+      display: grid !important;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    #blog-posts-container>div {
+      width: 100%;
+    }
+
+    /* card look */
+    #blog-posts-container .card {
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    /* image size in cards */
+    #blog-posts-container .card img {
+      width: 100%;
+      height: 190px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* FIX: stop breaking letters */
+    #blog-posts-container .card-title,
+    #blog-posts-container .card-text {
+      word-break: normal !important;
+      overflow-wrap: break-word !important;
+      white-space: normal !important;
+      line-height: 1.5;
+    }
+
+    /* clamp summary nicely */
+    #blog-posts-container .card-text {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+    }
+
+    #blog-post-page .container,
+    #blog-post-page .blog-post-container {
+      max-width: 80%;
+      top: 120px;
+      line-height: 2.4;
+    }
+
+    #blog-post-image {
+      width: 100%;
+      max-width: 800px;
+      height: 520px;
+      max-height: 1000px;
+      object-fit: cover;
+      border-radius: 16px;
+      display: block;
+      margin: 16px auto;
+    }
+
+    /* body typography */
+    #blog-post-body-container {
+      font-size: 18px;
+      line-height: 2.4 !important;
+      text-align: justify !important;
+    }
+
+    #blog-post-body-container p {
+      margin-bottom: 2rem;
+    }
+
+    #blog-post-body-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 12px;
+      display: block;
+      margin: 14px auto;
+    }
+
+    /* (optional) better spacing for headings */
+    #blog-post-body-container h1,
+    #blog-post-body-container h2,
+    #blog-post-body-container h3 {
+      margin-top: 18px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+
+    /* Blog Post Page */
+    .blog-post-page {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-page);
+      z-index: 1040;
+      overflow-y: auto;
+      padding-top: 15px;
+      /* Reduced from 100px */
+    }
+
+    .blog-content {
+      line-height: 2.2;
+    }
+
+    .blog-details-content p {
+      margin-bottom: 2rem;
+      line-height: 2.2;
+    }
+
+    .blog-details-content h3 {
+      line-height: 1.5;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .blog-details-content ul {
+      margin-bottom: 1.5rem;
+      padding-left: 20px;
+    }
+
+    .blog-details-content ul li {
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+  </style>
+</head>
+
+<body>
+
+  <header class="sticky-top">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <img alt="AI Tools Directory" loading="lazy" src="/Images/Logo.png" />
+        </a>
+        <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"
+          data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+          <i class="fa-solid fa-bars">
+          </i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <a class="nav-link" data-ar="الأدوات" data-en="Tools" href="/#featured">
+                Tools
+              </a>
+            </li>
+            <li class="nav-item">
+              <a id="cats-link" class="nav-link" data-ar="الفئات" data-en="Categories" href="/#categories">
+                Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a id="news-link" class="nav-link active" data-en="AI News" data-ar="AI اخبار" href="/news">
+                AI News
+              </a>
+            </li>
+          </ul>
+          <div class="nav-actions">
+            <div class="nav-search">
+              <div class="input-group">
+                <label class="visually-hidden" for="searchInput">
+                  Search AI tools
+                </label>
+                <input id="searchInput" type="text" class="form-control" autocomplete="off"
+                  placeholder="Search AI tools..." data-en-placeholder="Search AI tools..."
+                  data-ar-placeholder="ابحث عن أدوات الذكاء الاصطناعي..." />
+                <button class="btn btn-primary" id="searchBtn" type="button" aria-label="Search">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+              <div id="search-results-overlay" class="search-results-overlay" style="display: none;">
+                <button type="button" class="search-overlay-close" aria-label="Close" onclick="hideSearchOverlay()">
+                  <i class="fas fa-times"></i>
+                </button>
+                <div id="search-results-list" class="row g-3"></div>
+              </div>
+            </div>
+            <div class="auth-section">
+              <button class="btn btn-outline-primary" id="authButton" type="button">
+                <i class="fas fa-user me-2"></i>
+                <span data-ar="تسجيل الدخول" data-en="Sign In">Sign In</span>
+              </button>
+              <button class="btn btn-outline-primary" id="favoritesBtn" style="display: none;">
+                <i class="fas fa-heart me-2"></i>
+                <span data-ar="المفضلة" data-en="Favorites">Favorites</span>
+              </button>
+            </div>
+            <button aria-label="Toggle theme" class="btn btn-outline-primary" id="themeToggle">
+              <i class="fa-solid fa-moon">
+              </i>
+            </button>
+            <button class="btn btn-outline-primary" id="langToggle">
+              العربية
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="article-wrapper">
+    <div id="app">
+
+      <!-- LOADING SKELETON -->
+      <div id="news-loading-state" style="display:flex; justify-content:center; padding: 50px 0;">
+        <div class="container">
+          <div class="row justify-content-center">
+            <div class="col-lg-8">
+              <div class="skeleton skeleton-meta" style="width: 120px;"></div>
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-meta"></div>
+              <div class="skeleton skeleton-cover mt-3"></div>
+              <div class="skeleton skeleton-text mt-4"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-text" style="width: 80%;"></div>
+              <div class="skeleton skeleton-text mt-3"></div>
+              <div class="skeleton skeleton-text"></div>
+              <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ERROR STATE -->
+      <div id="news-error-state" class="error-state" style="display:none;">
+        <i class="fas fa-newspaper"></i>
+        <h1 id="news-error-message">Article not found</h1>
+        <a href="/#news-page" class="btn btn-primary mt-3">
+          <i class="fas fa-arrow-left me-2"></i>Back to News
+        </a>
+      </div>
+
+      <!-- ARTICLE CONTENT -->
+      <div class="page blog-post-page" id="blog-post-page" style="display: none;">
+        <div class="container mt-4 pt-2">
+          <a href="/#news-page" class="btn btn-outline-primary mb-4 back-button" id="back-to-news-list">
+            <i class="fas fa-arrow-left me-2"></i>
+            <span data-ar="العودة إلى الأخبار" data-en="Back to News">Back to News</span>
+          </a>
+
+          <div class="row justify-content-center">
+            <div class="col-12">
+              <article class="blog-details-content">
+                <div class="text-center mb-5">
+                  <span class="badge bg-primary mb-3" id="blog-post-category">Category</span>
+                  <h1 class="display-4 fw-thin mb-3" id="blog-post-title">Post Title</h1>
+                  <div class="text-muted mb-4">
+                    <span data-en="Posted on" data-ar="بتاريخ">Posted on</span>
+                    <span id="blog-post-date">2024-01-01</span>
+                    <span data-en="By" data-ar="بواسطة">By</span>
+                    <span id="blog-post-author">Author</span>
+                  </div>
+                </div>
+
+                <img loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                  alt="Blog Post Image" class="img-fluid rounded mb-5 w-100" id="blog-post-image"
+                  style="height: 400px; object-fit: cover;">
+
+                <div class="blog-content fs-5" id="blog-post-body-container">
+                  <!-- Blog content will be inserted here -->
+                </div>
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" style="display:none;">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <a href="/" class="text-white fw-bold text-decoration-none">FutureGen AI Tools</a>
+        <div class="d-flex gap-3">
+          <a href="https://x.com/FutureGEN2025"><i class="bi bi-twitter-x"></i></a>
+          <a href="https://www.instagram.com/futuregen26/"><i class="bi bi-instagram"></i></a>
+          <a href="https://www.youtube.com/@yazan-gf7nh"><i class="bi bi-youtube"></i></a>
+          <a href="https://www.facebook.com/profile.php?id=61584349735605"><i class="bi bi-facebook"></i></a>
+        </div>
+      </div>
+      <hr class="my-3 opacity-25" />
+      <div class="footer-bottom">
+        &copy; 2026 FutureGen AI Tools. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/navbar.js?v=20260523101102"></script>
+  <script src="/js/news-router.js?v=20260523101102"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,553 @@
+{
+  "name": "AI News Pipeline (60 items + Arabic translation + export news.json)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "trigger-interval",
+      "name": "Trigger (Every 6 Hours)",
+      "type": "n8n-nodes-base.interval",
+      "typeVersion": 1,
+      "position": [
+        220,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://www.technologyreview.com/topic/artificial-intelligence/feed/",
+        "options": {
+          "response": {
+            "responseFormat": "text"
+          }
+        }
+      },
+      "id": "http-mit",
+      "name": "HTTP RSS - MIT AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",
+        "options": {
+          "response": {
+            "responseFormat": "text"
+          }
+        }
+      },
+      "id": "http-techcrunch",
+      "name": "HTTP RSS - TechCrunch AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://venturebeat.com/category/ai/feed/",
+        "options": {
+          "response": {
+            "responseFormat": "text"
+          }
+        }
+      },
+      "id": "http-venturebeat",
+      "name": "HTTP RSS - VentureBeat AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        460,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "xmlToJson",
+        "propertyName": "data"
+      },
+      "id": "xml-mit",
+      "name": "XML -> JSON (MIT)",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 2,
+      "position": [
+        700,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "xmlToJson",
+        "propertyName": "data"
+      },
+      "id": "xml-techcrunch",
+      "name": "XML -> JSON (TechCrunch)",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 2,
+      "position": [
+        700,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "xmlToJson",
+        "propertyName": "data"
+      },
+      "id": "xml-venturebeat",
+      "name": "XML -> JSON (VentureBeat)",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 2,
+      "position": [
+        700,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const root = $input.first().json;\n\nconst itemsRaw = root?.rss?.channel?.item || root?.channel?.item || [];\nconst items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];\n\nfunction getText(v) {\n  if (!v) return \"\";\n  if (typeof v === \"string\") return v;\n  if (typeof v === \"object\" && v._) return v._;\n  if (typeof v === \"object\" && v[\"#text\"]) return v[\"#text\"]; \n  return String(v);\n}\n\nfunction stripHtml(html = \"\") {\n  return String(html).replace(/<[^>]*>/g, \" \").replace(/\\s+/g, \" \").trim();\n}\n\nfunction parseDate(d) {\n  const dt = new Date(d);\n  if (isNaN(dt.getTime())) return \"\";\n  return dt.toISOString().slice(0, 10);\n}\n\nfunction getImageFromHtml(html = \"\") {\n  const m = String(html).match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);\n  return m ? m[1] : \"\";\n}\n\nfunction makeId(link = \"\", title = \"\") {\n  return (link || title || Date.now().toString())\n    .replace(/[^a-zA-Z0-9]/g, \"\")\n    .slice(-18);\n}\n\nconst normalized = items.map((it) => {\n  const title = getText(it.title);\n  const link = getText(it.link);\n  const body = getText(it[\"content:encoded\"]) || getText(it.description) || \"\";\n  const pubDate = getText(it.pubDate) || getText(it[\"dc:date\"]) || \"\";\n\n  return {\n    id: makeId(link, title),\n    title_en: title.trim(),\n    summary_en: stripHtml(body).slice(0, 420),\n    body_en: body,\n    image: getImageFromHtml(body),\n    source_url: link,\n    date: parseDate(pubDate),\n    category_en: \"AI News\",\n    author_en: \"\"\n  };\n}).filter(x => x.title_en && x.source_url);\n\nreturn normalized.map(x => ({ json: x }));"
+      },
+      "id": "code-extract-mit",
+      "name": "Extract Items (MIT)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const root = $input.first().json;\n\nconst itemsRaw = root?.rss?.channel?.item || root?.channel?.item || [];\nconst items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];\n\nfunction getText(v) {\n  if (!v) return \"\";\n  if (typeof v === \"string\") return v;\n  if (typeof v === \"object\" && v._) return v._;\n  if (typeof v === \"object\" && v[\"#text\"]) return v[\"#text\"]; \n  return String(v);\n}\n\nfunction stripHtml(html = \"\") {\n  return String(html).replace(/<[^>]*>/g, \" \").replace(/\\s+/g, \" \").trim();\n}\n\nfunction parseDate(d) {\n  const dt = new Date(d);\n  if (isNaN(dt.getTime())) return \"\";\n  return dt.toISOString().slice(0, 10);\n}\n\nfunction getImageFromHtml(html = \"\") {\n  const m = String(html).match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);\n  return m ? m[1] : \"\";\n}\n\nfunction makeId(link = \"\", title = \"\") {\n  return (link || title || Date.now().toString())\n    .replace(/[^a-zA-Z0-9]/g, \"\")\n    .slice(-18);\n}\n\nconst normalized = items.map((it) => {\n  const title = getText(it.title);\n  const link = getText(it.link);\n  const body = getText(it[\"content:encoded\"]) || getText(it.description) || \"\";\n  const pubDate = getText(it.pubDate) || getText(it[\"dc:date\"]) || \"\";\n\n  return {\n    id: makeId(link, title),\n    title_en: title.trim(),\n    summary_en: stripHtml(body).slice(0, 420),\n    body_en: body,\n    image: getImageFromHtml(body),\n    source_url: link,\n    date: parseDate(pubDate),\n    category_en: \"AI News\",\n    author_en: \"\"\n  };\n}).filter(x => x.title_en && x.source_url);\n\nreturn normalized.map(x => ({ json: x }));"
+      },
+      "id": "code-extract-techcrunch",
+      "name": "Extract Items (TechCrunch)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const root = $input.first().json;\n\nconst itemsRaw = root?.rss?.channel?.item || root?.channel?.item || [];\nconst items = Array.isArray(itemsRaw) ? itemsRaw : [itemsRaw];\n\nfunction getText(v) {\n  if (!v) return \"\";\n  if (typeof v === \"string\") return v;\n  if (typeof v === \"object\" && v._) return v._;\n  if (typeof v === \"object\" && v[\"#text\"]) return v[\"#text\"]; \n  return String(v);\n}\n\nfunction stripHtml(html = \"\") {\n  return String(html).replace(/<[^>]*>/g, \" \").replace(/\\s+/g, \" \").trim();\n}\n\nfunction parseDate(d) {\n  const dt = new Date(d);\n  if (isNaN(dt.getTime())) return \"\";\n  return dt.toISOString().slice(0, 10);\n}\n\nfunction getImageFromHtml(html = \"\") {\n  const m = String(html).match(/<img[^>]+src=[\"']([^\"']+)[\"']/i);\n  return m ? m[1] : \"\";\n}\n\nfunction makeId(link = \"\", title = \"\") {\n  return (link || title || Date.now().toString())\n    .replace(/[^a-zA-Z0-9]/g, \"\")\n    .slice(-18);\n}\n\nconst normalized = items.map((it) => {\n  const title = getText(it.title);\n  const link = getText(it.link);\n  const body = getText(it[\"content:encoded\"]) || getText(it.description) || \"\";\n  const pubDate = getText(it.pubDate) || getText(it[\"dc:date\"]) || \"\";\n\n  return {\n    id: makeId(link, title),\n    title_en: title.trim(),\n    summary_en: stripHtml(body).slice(0, 420),\n    body_en: body,\n    image: getImageFromHtml(body),\n    source_url: link,\n    date: parseDate(pubDate),\n    category_en: \"AI News\",\n    author_en: \"\"\n  };\n}).filter(x => x.title_en && x.source_url);\n\nreturn normalized.map(x => ({ json: x }));"
+      },
+      "id": "code-extract-venturebeat",
+      "name": "Extract Items (VentureBeat)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "numberInputs": 3
+      },
+      "id": "merge-all",
+      "name": "Merge (3 Sources)",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        1220,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const all = $input.all().map(x => x.json);\n\n// Remove duplicates by URL\nconst map = new Map();\nfor (const n of all) {\n  if (!n?.source_url) continue;\n  if (!map.has(n.source_url)) map.set(n.source_url, n);\n}\n\nlet list = Array.from(map.values());\n\n// Sort newest\nlist.sort((a,b) => (b.date || \"\").localeCompare(a.date || \"\"));\n\n// Pick top 60\nlist = list.slice(0, 60);\n\nreturn [{\n  json: {\n    metadata: {\n      sources: [\n        \"MIT Technology Review (AI)\",\n        \"TechCrunch (AI)\",\n        \"VentureBeat (AI)\"\n      ],\n      total_articles: list.length,\n      generated_at: new Date().toISOString(),\n      translation_method: \"LibreTranslate (self-hosted)\",\n      version: \"1.0\"\n    },\n    items: list\n  }\n}];"
+      },
+      "id": "code-top60",
+      "name": "Normalize + Pick Top 60",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1460,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "items"
+      },
+      "id": "split-items",
+      "name": "Split out items",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        1700,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://31.97.55.83:5000/translate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": $json.title_en,\n  \"source\": \"en\",\n  \"target\": \"ar\",\n  \"format\": \"text\"\n}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "id": "translate-title",
+      "name": "Translate title_ar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1940,
+        80
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://31.97.55.83:5000/translate",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"q\": $json.summary_en,\n  \"source\": \"en\",\n  \"target\": \"ar\",\n  \"format\": \"text\"\n}",
+        "options": {
+          "response": {
+            "responseFormat": "json"
+          }
+        }
+      },
+      "id": "translate-summary",
+      "name": "Translate summary_ar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1940,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const title_ar = $items(\"Translate title_ar\")[0].json.translatedText || \"\";\nconst summary_ar = $items(\"Translate summary_ar\")[0].json.translatedText || \"\";\n\n// Attach Arabic translations\nreturn [{\n  json: {\n    ...$json,\n    title_ar,\n    summary_ar,\n    category_ar: \"أخبار الذكاء الاصطناعي\",\n    author_ar: \"\",\n    body_ar: \"\" \n  }\n}];"
+      },
+      "id": "attach-arabic",
+      "name": "Attach Arabic Fields",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2180,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "aggregateItems",
+        "aggregate": {
+          "aggregations": [
+            {
+              "aggregation": "append",
+              "propertyName": "items"
+            }
+          ]
+        }
+      },
+      "id": "aggregate-back",
+      "name": "Aggregate back to array",
+      "type": "n8n-nodes-base.itemLists",
+      "typeVersion": 1,
+      "position": [
+        2420,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $json.items || [];\n\nreturn [{\n  json: {\n    metadata: {\n      sources: [\n        \"MIT Technology Review (AI)\",\n        \"TechCrunch (AI)\",\n        \"VentureBeat (AI)\"\n      ],\n      total_articles: items.length,\n      generated_at: new Date().toISOString(),\n      translation_method: \"LibreTranslate (self-hosted)\",\n      version: \"1.0\"\n    },\n    items\n  }\n}];"
+      },
+      "id": "final-wrap",
+      "name": "Wrap Final JSON",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2660,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "/files/site/data/news.json",
+        "dataPropertyName": "data",
+        "options": {}
+      },
+      "id": "write-file",
+      "name": "Write news.json",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        2900,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const json = JSON.stringify($json, null, 2);\nreturn [{ json: { data: Buffer.from(json, 'utf8') } }];"
+      },
+      "id": "to-binary",
+      "name": "Convert JSON to Binary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2900,
+        80
+      ]
+    }
+  ],
+  "connections": {
+    "Trigger (Every 6 Hours)": {
+      "main": [
+        [
+          {
+            "node": "HTTP RSS - MIT AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP RSS - TechCrunch AI",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP RSS - VentureBeat AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP RSS - MIT AI": {
+      "main": [
+        [
+          {
+            "node": "XML -> JSON (MIT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP RSS - TechCrunch AI": {
+      "main": [
+        [
+          {
+            "node": "XML -> JSON (TechCrunch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP RSS - VentureBeat AI": {
+      "main": [
+        [
+          {
+            "node": "XML -> JSON (VentureBeat)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML -> JSON (MIT)": {
+      "main": [
+        [
+          {
+            "node": "Extract Items (MIT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML -> JSON (TechCrunch)": {
+      "main": [
+        [
+          {
+            "node": "Extract Items (TechCrunch)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XML -> JSON (VentureBeat)": {
+      "main": [
+        [
+          {
+            "node": "Extract Items (VentureBeat)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Items (MIT)": {
+      "main": [
+        [
+          {
+            "node": "Merge (3 Sources)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Items (TechCrunch)": {
+      "main": [
+        [
+          {
+            "node": "Merge (3 Sources)",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Extract Items (VentureBeat)": {
+      "main": [
+        [
+          {
+            "node": "Merge (3 Sources)",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge (3 Sources)": {
+      "main": [
+        [
+          {
+            "node": "Normalize + Pick Top 60",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize + Pick Top 60": {
+      "main": [
+        [
+          {
+            "node": "Split out items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split out items": {
+      "main": [
+        [
+          {
+            "node": "Translate title_ar",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Translate summary_ar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate title_ar": {
+      "main": [
+        [
+          {
+            "node": "Attach Arabic Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Translate summary_ar": {
+      "main": [
+        [
+          {
+            "node": "Attach Arabic Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Attach Arabic Fields": {
+      "main": [
+        [
+          {
+            "node": "Aggregate back to array",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate back to array": {
+      "main": [
+        [
+          {
+            "node": "Wrap Final JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wrap Final JSON": {
+      "main": [
+        [
+          {
+            "node": "Convert JSON to Binary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert JSON to Binary": {
+      "main": [
+        [
+          {
+            "node": "Write news.json",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1"
+}

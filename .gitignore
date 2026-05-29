@@ -1,0 +1,12 @@
+node_modules/
+venv/
+__pycache__/
+*.pyc
+*.rar
+*.log
+*.err.log
+*.out.log
+storage_state.json
+.env
+.env.local
+FutureGEN-PRO-Export.zip

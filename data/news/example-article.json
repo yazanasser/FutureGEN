@@ -1,0 +1,11 @@
+{
+  "title": "OpenAI Launches GPT-5 with Enhanced Reasoning",
+  "slug": "example-article",
+  "date": "2026-04-20T10:00:00Z",
+  "author": "FutureGen Team",
+  "category": "AI Industry",
+  "cover_image": "https://futuregen.space/Images/Logo.png",
+  "excerpt": "OpenAI has unveiled GPT-5, featuring breakthrough improvements in reasoning, multimodal understanding, and real-time collaboration capabilities.",
+  "body_html": "<p>OpenAI has unveiled <strong>GPT-5</strong>, the latest iteration of its flagship language model, featuring breakthrough improvements in reasoning, multimodal understanding, and real-time collaboration capabilities.</p><h2>Key Highlights</h2><ul><li><strong>Enhanced Reasoning:</strong> GPT-5 demonstrates a 40% improvement in complex reasoning tasks compared to its predecessor.</li><li><strong>Multimodal Integration:</strong> The model can now seamlessly process text, images, audio, and video in a single conversation.</li><li><strong>Real-time Collaboration:</strong> New APIs enable multiple users to interact with the same model instance simultaneously.</li></ul><h2>Industry Impact</h2><p>Analysts predict that GPT-5 will accelerate AI adoption across industries, from healthcare diagnostics to automated software development. The model's improved reasoning capabilities make it particularly suited for complex decision-making tasks.</p><p>For more details, visit the <a href='https://futuregen.space'>FutureGen AI Tools Directory</a> to explore tools powered by the latest AI models.</p>",
+  "tags": ["OpenAI", "GPT-5", "AI", "Language Models", "Reasoning"]
+}

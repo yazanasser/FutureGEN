@@ -1,0 +1,214 @@
+/* ========== THEME TOKENS ========== */
+:root {
+  --primary-color: #401F71;
+  --secondary-color: #be7b72;
+  --accent-color: #fdaf7b;
+  --bg-page: #f8fafc;
+  --bg-white: #ffffff;
+  --text-dark: #101010;
+  --text-muted: #6b7280;
+  --border: #e5e7eb;
+  --radius-xs: 8px;
+  --radius-sm: 25px;
+  --radius-md: 16px;
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.06);
+  --shadow-md: 0 8px 20px -6px rgb(0 0 0 / 0.15);
+  --shadow-lg: 0 20px 40px -12px rgb(0 0 0 / 0.25);
+  --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  --easing: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --header-h: 68px;
+  --footer-bg-light: linear-gradient(135deg, #be7b72 0%, #633d5c 100%);
+  --footer-bg-dark: linear-gradient(135deg, #2a1a4a 0%, #8a5a52 100%);
+  --footer-text-light: #ffffff;
+  --footer-text-dark: #e5e7eb;
+  --footer-link-light: rgba(255, 255, 255, 0.85);
+  --footer-link-dark: rgba(229, 231, 235, 0.85);
+  --footer-border-light: rgba(255, 255, 255, 0.25);
+  --footer-border-dark: rgba(229, 231, 235, 0.25);
+}
+
+html[data-theme="dark"] {
+  --bg-page: #0b0f1a;
+  --bg-white: #1a2238;
+  --text-dark: #e5e7eb;
+  --text-muted: #9ca3af;
+  --border: #455683;
+  --shadow-sm: 0 1px 2px 0 rgb(255 255 255 / 0.04);
+  --shadow-md: 0 8px 20px -6px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 20px 40px -12px rgb(0 0 0 / 0.6);
+}
+
+/* ========== BASE ========== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: 90px;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: 'Tajawal', sans-serif !important;
+  font-weight: 700;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Tajawal", "Inter", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-weight: 700;
+  background-color: var(--bg-page);
+  color: var(--text-dark);
+  line-height: 1.65;
+  margin: 0;
+  scroll-behavior: smooth;
+  transition: background-color 0.3s ease;
+  overflow-x: hidden;
+  direction: ltr;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ========== RTL FIXES ========== */
+body.rtl-mode {
+  direction: rtl;
+  text-align: right;
+}
+
+body.rtl-mode .hero-content,
+body.rtl-mode .section h2,
+body.rtl-mode .section p,
+body.rtl-mode .section li,
+body.rtl-mode footer {
+  text-align: right;
+}
+
+body.rtl-mode .footer-container {
+  direction: rtl;
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gradient);
+  border-radius: 999px;
+}
+
+html[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #0b0f1a;
+}
+
+/* ========== COMMON COMPONENTS ========== */
+.btn {
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-xs);
+  font-weight: 600;
+  transition: transform 0.2s var(--easing), box-shadow 0.2s var(--easing);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary {
+  background: var(--gradient);
+  border: none;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  color: #fff;
+}
+
+.btn-outline-primary {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background: var(--primary-color);
+  color: #fff;
+}
+
+html[data-theme="dark"] .btn-outline-primary {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+
+html[data-theme="dark"] .btn-outline-primary:hover {
+  background: var(--accent-color);
+  color: var(--text-dark);
+}
+
+.card {
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.35s var(--easing), box-shadow 0.35s var(--easing);
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+}
+
+.section {
+  scroll-margin-top: calc(var(--header-h) + 14px);
+  padding: 4rem 0;
+}
+
+.section h2 {
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.loader {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+  margin: 2rem auto;
+}
+
+.loader:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid var(--primary-color);
+  border-color: var(--primary-color) transparent var(--primary-color) transparent;
+  animation: loader 1.2s linear infinite;
+}
+
+@keyframes loader {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

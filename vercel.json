@@ -1,0 +1,51 @@
+{
+  "cleanUrls": true,
+  "headers": [
+    {
+      "source": "/version.json",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
+        { "key": "Pragma", "value": "no-cache" },
+        { "key": "Expires", "value": "0" }
+      ]
+    },
+    {
+      "source": "/(.*).(html|htm)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/(.*).(css|js)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    },
+    {
+      "source": "/data/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=86400" }
+      ]
+    },
+    {
+      "source": "/(.*).(png|jpg|webp|svg|woff2)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/news", "dest": "/index.html" },
+    { "src": "/tool/(.*)", "status": 301, "headers": { "Location": "/tools/$1" } },
+    { "src": "/article/(.*)", "status": 301, "headers": { "Location": "/news/$1" } },
+    { "src": "/tools/(.*)\\.html", "status": 301, "headers": { "Location": "/tools/$1" } },
+    { "src": "/news/(.*)\\.html", "status": 301, "headers": { "Location": "/news/$1" } },
+    { "src": "/news/(.*)", "dest": "/news.html" },
+    { "src": "/tools/(.*)", "dest": "/tool.html" },
+    { "src": "/category/(.*)", "dest": "/index.html" },
+    { "src": "/page/(.*)", "dest": "/index.html" },
+    { "src": "/about", "dest": "/index.html" },
+    { "src": "/contact", "dest": "/index.html" }
+  ]
+}

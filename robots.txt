@@ -1,0 +1,52 @@
+# FutureGen AI Tools Directory - Robots.txt
+# Updated: 2026-05-22
+
+# Allow all search engines full access
+User-agent: *
+Allow: /
+
+# Specifically allow all major search engine bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
+# Block internal/admin paths
+Disallow: /server/
+Disallow: /scripts/
+Disallow: /node_modules/
+Disallow: /scratch/
+Disallow: /*.log$
+
+# Sitemap index (contains all 6 sitemaps)
+Sitemap: https://futuregen.space/sitemap-index.xml
+
+# Individual sitemaps (for crawlers that don't support sitemap index)
+Sitemap: https://futuregen.space/sitemap1.xml
+Sitemap: https://futuregen.space/sitemap2.xml
+Sitemap: https://futuregen.space/sitemap3.xml
+Sitemap: https://futuregen.space/sitemap4.xml
+Sitemap: https://futuregen.space/sitemap5.xml
+Sitemap: https://futuregen.space/sitemap6.xml

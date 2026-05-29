@@ -1,0 +1,11 @@
+/tool/*            /tools/:splat      301
+/article/*         /news/:splat       301
+/tools/:slug.html  /tools/:slug       301
+/news/:slug.html   /news/:slug        301
+/news              /index.html        200
+/tools/*           /tool.html         200
+/news/*            /news.html         200
+/category/*        /index.html        200
+/page/*            /index.html        200
+/about             /index.html        200
+/contact           /index.html        200
